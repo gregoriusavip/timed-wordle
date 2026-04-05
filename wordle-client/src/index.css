@@ -1,0 +1,15 @@
+:root {
+  --section-padding-height: clamp(3.75rem, 8vw, 6.25rem);
+  --section-padding-width: 16px;
+  --default-font-size: clamp(1rem, 3vw, 2rem);
+  --container-width: 1600px;
+  --container-gap: clamp(3rem, 6vw, 4rem);
+}
+
+html {
+  font-size: var(--default-font-size);
+}
+
+body {
+  padding: var(--section-padding-height) var(--section-padding-width);
+}
