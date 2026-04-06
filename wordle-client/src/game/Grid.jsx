@@ -3,7 +3,7 @@ import Row from "./Row";
 
 function Grid() {
   return (
-    <div className="flex flex-col gap-2 w-[288px] sm:min-w-[288px] sm:w-1/3">
+    <div className="flex flex-col gap-1.5 min-w-66.75 max-w-[320px]">
       <Row></Row>
       <Row></Row>
       <Row></Row>
