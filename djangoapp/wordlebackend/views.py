@@ -1,6 +1,8 @@
 import os
 import logging
 import hashlib
+import re
+import random
 from django.conf import settings
 from django.core.cache import cache
 
@@ -120,3 +122,35 @@ def validate_hard_mode(guess, correct_hints, present_hints):
             return False, f"Guess must contain at least {required_count} {char.upper()}(s)"
 
     return True, ""
+
+def get_timeout_guess(all_valid_words, correct_hints, present_hints):
+    """
+    Quickly selects a random valid word that satisfies current Hard Mode hints.
+    Uses Regex for high-performance dictionary filtering.
+    """
+    if not correct_hints and not present_hints:
+        return random.choice(list(all_valid_words))
+
+    # Construct the Regex pattern
+    # 1. Positional Green hints (e.g., ^A..E.$)
+    pattern_parts = ["."] * 5
+    for idx, char in correct_hints.items():
+        pattern_parts[idx] = char
+    
+    # 2. Positive Lookaheads for Yellow frequency hints
+    # e.g., (?=(.*E){2})
+    lookaheads = ""
+    for char, count in present_hints.items():
+        lookaheads += f"(?=(.*{char}){{{count}}})"
+    
+    full_pattern = f"^{lookaheads}{''.join(pattern_parts)}$"
+    regex = re.compile(full_pattern)
+    
+    # Filter the word list
+    filtered_words = [word for word in all_valid_words if regex.match(word)]
+    
+    if not filtered_words:
+        # Fallback if somehow no words fit (should not happen with valid hints)
+        return random.choice(list(all_valid_words))
+        
+    return random.choice(filtered_words)
