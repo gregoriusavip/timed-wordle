@@ -79,12 +79,12 @@ def get_timeout_guess(all_valid_words, correct_hints=None, present_hints=None):
     # Green hints
     pattern_parts = ["."] * 5
     for idx_str, char in correct_hints.items():
-        pattern_parts[int(idx_str)] = char
+        pattern_parts[int(idx_str)] = char.lower()
     
     # Yellow hints
     lookaheads = ""
     for char, count in present_hints.items():
-        lookaheads += f"(?=(.*{char}){{{count}}})"
+        lookaheads += f"(?=(.*{char.lower()}){{{count}}})"
     
     full_pattern = f"^{lookaheads}{''.join(pattern_parts)}$"
     regex = re.compile(full_pattern)
