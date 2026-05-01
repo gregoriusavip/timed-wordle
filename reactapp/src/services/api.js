@@ -1,16 +1,9 @@
-/**
- * A schema for user's guess
- * @typedef {Object} Guess
- * @property {string} curGuess - User's guess, must be length of 5 and only alphabets
- * @property {string} prevGuess - User previous round's guess,
- * @property {boolean} mode - Hard mode settings
- * @property {string} curDate - Current date in format: YYYY-MM-DD
- */
+import * as Types from "../types";
 
 const BASE_URL = "";
 
 /**
- * @param {...Guess} data - {@link Guess}'s schema
+ * @param {...Types.Guess} data - {@link Types.Guess} object schema
  * @throws - Throws an error if response is not OK (status code != 200-299)
  * @returns {Promise<Object>} - Returns the JSON with hints based of the guess
  */
@@ -30,7 +23,7 @@ async function getGradedGuess(data) {
   });
   if (!response.ok) {
     const errorResult = await response.json();
-    throw new Error(errorResult.error);
+    throw new Error(errorResult.error || "Server Error");
   }
 
   const result = await response.json();
