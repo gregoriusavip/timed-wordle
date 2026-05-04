@@ -21,3 +21,10 @@ export const GuessSchema = z.object({
   curDate: DateSchema,
   prevGuess: z.string().default(""),
 });
+
+/** @type {Types.TimeoutGuess} - {@link Types.TimeoutGuess}'s schema */
+export const TimeoutGuessSchema = z.object({
+  mode: z.boolean().default(false),
+  curDate: DateSchema,
+  prevGuess: z.string().default(""),
+});
