@@ -9,15 +9,16 @@ import * as z from "zod";
 
 function App() {
   const [guess, setGuess] = useState("");
-  const [guesses, setGuesses] = useState([]);
+  const [attempts, setAttempts] = useState([]);
   const [gameStatus, setGameStatus] = useState("playing");
   const [hardMode, setHardMode] = useState(false);
 
   const mutation = useMutation({
     mutationFn: () => {
+      const prevGuess = attempts.length > 0 ? attempts.at(-1)[0] : "";
       const data = {
         curGuess: guess,
-        prevGuess: guesses.at(-1) ?? "",
+        prevGuess: prevGuess,
         mode: hardMode,
         curDate: getCurrentDate(),
       };
@@ -29,14 +30,14 @@ function App() {
           // Schema validation error
           throw new Error(e.issues[0].message);
         }
-
         // API error
         throw new Error(e.message);
       }
     },
     onSuccess: (data) => {
-      setGuesses((prevGuesses) => [...prevGuesses, guess]);
+      setAttempts((prevAttempts) => [...prevAttempts, [guess, data.result]]);
       setGuess("");
+      mutation.reset();
     },
   });
 
@@ -62,7 +63,11 @@ function App() {
   return (
     <>
       {mutation.isError ? <div>{mutation.error.message}</div> : null}
-      <Grid guesses={guesses} currentGuess={guess}></Grid>
+      <Grid
+        attempts={attempts}
+        currentGuess={guess}
+        currentResult={mutation.isSuccess ? mutation.data.result : null}
+      />
     </>
   );
 }

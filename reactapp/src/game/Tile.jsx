@@ -1,11 +1,14 @@
 import "../App.css";
 
-function Tile({ letter }) {
-  return (
-    <div className="w-1/2 aspect-square bg-zinc-400 shadow-amber-200">
-      {letter}
-    </div>
-  );
+function Tile({ letter, bckgColor }) {
+  const tileClasses = `
+  w-14 h-14 
+  flex items-center justify-center 
+  text-2xl font-bold uppercase 
+  ${bckgColor}
+`;
+
+  return <div className={tileClasses}>{letter}</div>;
 }
 
 export default Tile;
