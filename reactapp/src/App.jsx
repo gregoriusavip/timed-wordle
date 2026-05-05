@@ -1,43 +1,50 @@
 import Grid from "./game/Grid";
 import "./App.css";
+import Countdown from "react-countdown";
 import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { getGradedGuess } from "./services/api";
-import { getCurrentDate } from "./services/utils";
-import { GuessSchema } from "./services/schema";
-import * as z from "zod";
+import { mutateGuess, mutateTimeout } from "./services/utils";
 
 function App() {
   const [guess, setGuess] = useState("");
   const [attempts, setAttempts] = useState([]);
   const [gameStatus, setGameStatus] = useState("playing");
   const [hardMode, setHardMode] = useState(false);
+  const [currentTime, setCurrentTime] = useState(Date.now);
 
-  const mutation = useMutation({
-    mutationFn: () => {
-      const prevGuess = attempts.length > 0 ? attempts.at(-1)[0] : "";
-      const data = {
-        curGuess: guess,
-        prevGuess: prevGuess,
-        mode: hardMode,
-        curDate: getCurrentDate(),
-      };
-      try {
-        const validGuess = GuessSchema.parse(data);
-        return getGradedGuess(validGuess);
-      } catch (e) {
-        if (e instanceof z.ZodError) {
-          // Schema validation error
-          throw new Error(e.issues[0].message);
-        }
-        // API error
-        throw new Error(e.message);
-      }
-    },
+  // Random component
+  const Completionist = () => <span>Random guess NOW!</span>;
+
+  // Renderer callback with condition
+  const renderer = ({ seconds, completed }) => {
+    if (completed) {
+      return <Completionist />;
+    } else {
+      // Render a countdown
+      return <span>{seconds}</span>;
+    }
+  };
+
+  const submitGuess = (data) => {
+    setAttempts((prevAttempts) => [...prevAttempts, [data.guess, data.result]]);
+    setGuess("");
+  };
+
+  const HandleTimeout = () => {};
+
+  const guessMutation = useMutation({
+    mutationFn: () => mutateGuess(attempts, guess, hardMode),
     onSuccess: (data) => {
-      setAttempts((prevAttempts) => [...prevAttempts, [guess, data.result]]);
-      setGuess("");
-      mutation.reset();
+      submitGuess(data);
+      guessMutation.reset();
+    },
+  });
+
+  const timeoutMutation = useMutation({
+    mutationFn: () => mutateTimeout(attempts, hardMode),
+    onSuccess: (data) => {
+      submitGuess(data);
+      timeoutMutation.reset();
     },
   });
 
@@ -46,7 +53,7 @@ function App() {
 
     async function handleKeyDown(e) {
       if (e.key === "Enter") {
-        mutation.mutate();
+        guessMutation.mutate();
       } else if (e.key === "Backspace" || e.key === "Delete") {
         setGuess((prev) => prev.slice(0, -1));
       } else if (/^[a-zA-Z]$/.test(e.key) && guess.length < 5) {
@@ -58,15 +65,21 @@ function App() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [gameStatus, guess, mutation]);
+  }, [gameStatus, guess, guessMutation]);
 
   return (
     <>
-      {mutation.isError ? <div>{mutation.error.message}</div> : null}
+      <Countdown
+        date={currentTime + 5000}
+        renderer={renderer}
+        onComplete={() => {
+          timeoutMutation.mutate();
+        }}
+      />
+      {guessMutation.isError ? <div>{guessMutation.error.message}</div> : null}
       <Grid
         attempts={attempts}
-        currentGuess={guess}
-        currentResult={mutation.isSuccess ? mutation.data.result : null}
+        currentGuess={timeoutMutation.data?.guess ?? guess}
       />
     </>
   );

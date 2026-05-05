@@ -31,7 +31,7 @@ async function fetchAPI(body, targetURL) {
  * @throws - Throws an error if fetchAPI gets a bad response
  * @returns {Promise<Object>} - Returns the JSON with hints based of the guess
  */
-export async function getGradedGuess(data) {
+export async function fetchGradedGuess(data) {
   const url = `${BASE_URL}/guess`;
   const body = JSON.stringify({
     guess: data.curGuess,
@@ -48,7 +48,7 @@ export async function getGradedGuess(data) {
  * @throws - Throws an error if fetchAPI gets a bad response
  * @returns {Promise<Object>} - Returns the JSON with the random guess
  */
-export async function getTimeoutGuess(data) {
+export async function fetchTimeoutGuess(data) {
   const url = `${BASE_URL}/timeout`;
   const body = JSON.stringify({
     date: data.curDate,
