@@ -22,22 +22,6 @@ function App() {
     setGuess("");
   };
 
-  const guessMutation = useMutation({
-    mutationFn: () => mutateGuess(attempts, guess, hardMode),
-    onSuccess: (data) => {
-      submitGuess(data);
-      guessMutation.reset();
-    },
-  });
-
-  const timeoutMutation = useMutation({
-    mutationFn: () => mutateTimeout(attempts, hardMode),
-    onSuccess: (data) => {
-      submitGuess(data);
-      timeoutMutation.reset();
-    },
-  });
-
   // Random component
   const Completionist = () => <span>Random guess NOW!</span>;
 
@@ -50,6 +34,23 @@ function App() {
       return <span>{seconds}</span>;
     }
   };
+
+  const guessMutation = useMutation({
+    mutationFn: () => mutateGuess(attempts, guess, hardMode),
+    onSuccess: (data) => {
+      submitGuess(data);
+      guessMutation.reset();
+    },
+  });
+
+  const timeoutMutation = useMutation({
+    mutationFn: () => mutateTimeout(attempts, hardMode),
+    onSuccess: (data) => {
+      if (guessMutation.isPending) return; // Ignore if they hit Enter just in time
+      submitGuess(data);
+      timeoutMutation.reset();
+    },
+  });
 
   useEffect(() => {
     if (gameStatus !== "playing") return;
@@ -77,6 +78,7 @@ function App() {
         key={multiplier}
         renderer={renderer}
         onComplete={() => {
+          if (guessMutation.isPending) return; // Ignore if they hit Enter just in time
           timeoutMutation.mutate();
         }}
       />
