@@ -12,25 +12,10 @@ function App() {
   const [hardMode, setHardMode] = useState(false);
   const [currentTime, setCurrentTime] = useState(Date.now);
 
-  // Random component
-  const Completionist = () => <span>Random guess NOW!</span>;
-
-  // Renderer callback with condition
-  const renderer = ({ seconds, completed }) => {
-    if (completed) {
-      return <Completionist />;
-    } else {
-      // Render a countdown
-      return <span>{seconds}</span>;
-    }
-  };
-
   const submitGuess = (data) => {
     setAttempts((prevAttempts) => [...prevAttempts, [data.guess, data.result]]);
     setGuess("");
   };
-
-  const HandleTimeout = () => {};
 
   const guessMutation = useMutation({
     mutationFn: () => mutateGuess(attempts, guess, hardMode),
@@ -47,6 +32,19 @@ function App() {
       timeoutMutation.reset();
     },
   });
+
+  // Random component
+  const Completionist = () => <span>Random guess NOW!</span>;
+
+  // Renderer callback with condition
+  const renderer = ({ seconds, completed }) => {
+    if (completed) {
+      return <Completionist />;
+    } else {
+      // Render a countdown
+      return <span>{seconds}</span>;
+    }
+  };
 
   useEffect(() => {
     if (gameStatus !== "playing") return;
@@ -77,10 +75,7 @@ function App() {
         }}
       />
       {guessMutation.isError ? <div>{guessMutation.error.message}</div> : null}
-      <Grid
-        attempts={attempts}
-        currentGuess={timeoutMutation.data?.guess ?? guess}
-      />
+      <Grid attempts={attempts} currentGuess={guess} />
     </>
   );
 }
