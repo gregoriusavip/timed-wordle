@@ -11,8 +11,13 @@ function App() {
   const [gameStatus, setGameStatus] = useState("playing");
   const [hardMode, setHardMode] = useState(false);
   const [currentTime, setCurrentTime] = useState(Date.now);
+  const [multiplier, setMultiplier] = useState(1); // Countdown multiplier
 
   const submitGuess = (data) => {
+    if (multiplier < 6) {
+      setMultiplier((prevMultiplier) => prevMultiplier + 1);
+      setCurrentTime(Date.now);
+    }
     setAttempts((prevAttempts) => [...prevAttempts, [data.guess, data.result]]);
     setGuess("");
   };
@@ -68,7 +73,8 @@ function App() {
   return (
     <>
       <Countdown
-        date={currentTime + 5000}
+        date={currentTime + 10000 * multiplier}
+        key={multiplier}
         renderer={renderer}
         onComplete={() => {
           timeoutMutation.mutate();
