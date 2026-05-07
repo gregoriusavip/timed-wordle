@@ -6,7 +6,7 @@ function Grid({ attempts, currentGuess }) {
   return (
     <div className="flex flex-col gap-1.5 min-w-66.75 max-w-[320px]">
       {attempts.map((attempt, index) => (
-        <Row key={index} word={attempt[0]} result={attempt[1]} />
+        <Row key={index} word={attempt.guess} result={attempt.result} />
       ))}
       {attempts.length < 6 && <Row key={attempts.length} word={currentGuess} />}
       {Array.from({ length: remainingGuess }).map((_, index) => (

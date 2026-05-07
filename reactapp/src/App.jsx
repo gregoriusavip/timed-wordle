@@ -18,7 +18,10 @@ function App() {
       setMultiplier((prevMultiplier) => prevMultiplier + 1);
       setCurrentTime(Date.now);
     }
-    setAttempts((prevAttempts) => [...prevAttempts, [data.guess, data.result]]);
+    setAttempts((prevAttempts) => [
+      ...prevAttempts,
+      { guess: data.guess, result: data.result },
+    ]);
     setGuess("");
   };
 
