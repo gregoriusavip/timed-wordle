@@ -3,7 +3,8 @@ import "./App.css";
 import Countdown from "react-countdown";
 import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { mutateGuess, mutateTimeout } from "./services/utils";
+import { mutateGuess, mutateSolution, mutateTimeout } from "./services/utils";
+import { checkWin } from "./services/utils";
 
 function App() {
   const [guess, setGuess] = useState("");
@@ -12,16 +13,38 @@ function App() {
   const [hardMode, setHardMode] = useState(false);
   const [currentTime, setCurrentTime] = useState(Date.now);
   const [multiplier, setMultiplier] = useState(1); // Countdown multiplier
+  const [solution, setSolution] = useState("");
+
+  const solutionMutation = useMutation({
+    mutationFn: (curAttempts) => mutateSolution(curAttempts),
+    onSuccess: (data) => {
+      setSolution(data.result);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
 
   const submitGuess = (data) => {
+    if (gameStatus !== "playing") return;
+
     if (multiplier < 6) {
       setMultiplier((prevMultiplier) => prevMultiplier + 1);
       setCurrentTime(Date.now);
     }
-    setAttempts((prevAttempts) => [
-      ...prevAttempts,
-      { guess: data.guess, result: data.result },
-    ]);
+
+    const newAttempt = { guess: data.guess, result: data.result };
+    const nextAttempts = [...attempts, newAttempt];
+
+    if (checkWin(data.result)) {
+      setGameStatus("gameWon");
+      setSolution(data.guess);
+    } else if (nextAttempts.length > 5) {
+      setGameStatus("gameOver");
+      solutionMutation.mutate(nextAttempts);
+    }
+
+    setAttempts(nextAttempts);
     setGuess("");
   };
 
@@ -30,6 +53,7 @@ function App() {
 
   // Renderer callback with condition
   const renderer = ({ seconds, completed }) => {
+    if (gameStatus !== "playing") return null; // Remove timer
     if (completed) {
       return <Completionist />;
     } else {
@@ -76,6 +100,11 @@ function App() {
 
   return (
     <>
+      {gameStatus === "gameWon"
+        ? `You Won. The word is: ${solution}`
+        : gameStatus === "gameOver"
+          ? `You Lost. The word is: ${solution}`
+          : null}
       <Countdown
         date={currentTime + 10000 * multiplier}
         key={multiplier}

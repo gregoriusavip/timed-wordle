@@ -15,4 +15,11 @@
  * @property {string} curDate - Current date in string format: YYYY-MM-DD
  */
 
+/**
+ * A schema for getting a solution
+ * @typedef {Object} RevealWord
+ * @property {Array} attempts - An array of guesses and its corresponding revealed hints
+ * @property {string} curDate - Current date in string format: YYYY-MM-DD
+ */
+
 export const Types = {};

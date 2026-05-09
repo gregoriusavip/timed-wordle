@@ -1,5 +1,5 @@
-import { GuessSchema, TimeoutGuessSchema } from "./schema";
-import { fetchGradedGuess, fetchTimeoutGuess } from "./api";
+import { GuessSchema, TimeoutGuessSchema, RevealWordSchema } from "./schema";
+import { fetchGradedGuess, fetchSolution, fetchTimeoutGuess } from "./api";
 import * as z from "zod";
 
 /**
@@ -53,4 +53,29 @@ export function mutateTimeout(attempts, hardMode) {
     // API error
     throw new Error(e.message);
   }
+}
+
+export function mutateSolution(attempts) {
+  const body = {
+    attempts: attempts,
+    curDate: getCurrentDate(),
+  };
+  try {
+    const validReveal = RevealWordSchema.parse(body);
+    return fetchSolution(validReveal);
+  } catch (e) {
+    if (e instanceof z.ZodError) {
+      // Schema validation error
+      throw new Error(e.issues[0].message);
+    }
+    // API error
+    throw new Error(e.message);
+  }
+}
+
+export function checkWin(results) {
+  for (const result of results) {
+    if (result.status !== "correct") return false;
+  }
+  return true;
 }

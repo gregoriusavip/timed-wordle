@@ -28,3 +28,21 @@ export const TimeoutGuessSchema = z.object({
   curDate: DateSchema,
   prevGuess: z.string().default(""),
 });
+
+const StatusSchema = z.enum(["absent", "correct", "present"]);
+
+const LetterObjectSchema = z.object({
+  letter: z.string().length(1), // exactly 1 character
+  status: StatusSchema,
+});
+
+const AttemptSchema = z.object({
+  guess: z.string().length(5),
+  result: z.array(LetterObjectSchema).length(5),
+});
+
+/** @type {Types.RevealWord} - {@link Types.RevealWord}'s schema */
+export const RevealWordSchema = z.object({
+  attempts: z.array(AttemptSchema).length(6),
+  curDate: DateSchema,
+});

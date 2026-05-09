@@ -27,6 +27,7 @@ async function fetchAPI(body, targetURL) {
 }
 
 /**
+ * Call the backend to grade a guess
  * @param {Types.Guess} data - {@link Types.Guess} object schema
  * @throws - Throws an error if fetchAPI gets a bad response
  * @returns {Promise<Object>} - Returns the JSON with hints based of the guess
@@ -54,6 +55,21 @@ export async function fetchTimeoutGuess(data) {
     date: data.curDate,
     hard_mode: data.mode,
     prev_guess: data.prevGuess,
+  });
+  return fetchAPI(body, url);
+}
+
+/**
+ * Call the backend to get the solution of a given date
+ * @param {Types.RevealWord} data - {@link Types.RevealWord} object schema
+ * @throws - Throws an error if fetchAPI gets a bad response
+ * @returns {Promise<Object>} - Returns the JSON with the random guess
+ */
+export async function fetchSolution(data) {
+  const url = `${BASE_URL}/reveal`;
+  const body = JSON.stringify({
+    date: data.curDate,
+    attempts: data.attempts,
   });
   return fetchAPI(body, url);
 }
