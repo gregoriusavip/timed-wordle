@@ -1,5 +1,5 @@
 import Tile from "./Tile";
-import "../App.css";
+import "../styles.css";
 
 const COLORS = {
   correct: "bg-green-600",
