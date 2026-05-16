@@ -11,6 +11,14 @@ export function useGame() {
   const [targetTime, setTargetTime] = useState(() => Date.now() + 10000);
   const [multiplier, setMultiplier] = useState(1); // Countdown multiplier
   const [solution, setSolution] = useState("");
+  const [keyboardStatus, setKeyboardStatus] = useState(() =>
+    Object.fromEntries(
+      Array.from({ length: 26 }, (_, i) => [
+        String.fromCharCode(97 + i),
+        "unread",
+      ]),
+    ),
+  );
 
   const solutionMutation = useMutation({
     mutationFn: (curAttempts) => mutateSolution(curAttempts),
@@ -44,6 +52,33 @@ export function useGame() {
     timeoutMutation.mutate();
   };
 
+  const updateKeyboardStatus = (attempt) => {
+    const guess = attempt.guess;
+    const result = attempt.result;
+
+    setKeyboardStatus((prev) => {
+      const nextStatus = { ...prev };
+
+      for (let i = 0; i < 5; i++) {
+        if (nextStatus[guess[i]] !== "correct") {
+          nextStatus[guess[i]] = result[i];
+        }
+      }
+
+      return nextStatus;
+    });
+  };
+
+  const updateGameStatus = (guess, result, nextAttempts) => {
+    if (checkWin(result)) {
+      setGameStatus("gameWon");
+      setSolution(guess);
+    } else if (nextAttempts.length > 5) {
+      setGameStatus("gameOver");
+      solutionMutation.mutate(nextAttempts);
+    }
+  };
+
   const submitGuess = (guess, result) => {
     if (gameStatus !== "playing") return;
 
@@ -57,13 +92,8 @@ export function useGame() {
     const newAttempt = { guess: guess, result: result };
     const nextAttempts = [...attempts, newAttempt];
 
-    if (checkWin(result)) {
-      setGameStatus("gameWon");
-      setSolution(guess);
-    } else if (nextAttempts.length > 5) {
-      setGameStatus("gameOver");
-      solutionMutation.mutate(nextAttempts);
-    }
+    updateKeyboardStatus(newAttempt);
+    updateGameStatus(guess, result, nextAttempts);
 
     setAttempts(nextAttempts);
     setGuess("");
@@ -104,7 +134,7 @@ export function useGame() {
     targetTime,
     multiplier,
     error: guessMutation.error?.message,
-
+    keyboardStatus,
     // Actions
     handleInput,
     handleTimeout,
