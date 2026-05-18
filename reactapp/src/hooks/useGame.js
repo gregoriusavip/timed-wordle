@@ -3,6 +3,13 @@ import { useMutation } from "@tanstack/react-query";
 import { mutateGuess, mutateSolution, mutateTimeout } from "../services/utils";
 import { checkWin } from "../services/utils";
 
+const STATUS_PRIO = {
+  unread: 0,
+  absent: 1,
+  present: 2,
+  correct: 3,
+};
+
 export function useGame() {
   const [guess, setGuess] = useState("");
   const [attempts, setAttempts] = useState([]);
@@ -11,13 +18,9 @@ export function useGame() {
   const [targetTime, setTargetTime] = useState(() => Date.now() + 10000);
   const [multiplier, setMultiplier] = useState(1); // Countdown multiplier
   const [solution, setSolution] = useState("");
+  const [showCountdown, setShowCountdown] = useState(true);
   const [keyboardStatus, setKeyboardStatus] = useState(() =>
-    Object.fromEntries(
-      Array.from({ length: 26 }, (_, i) => [
-        String.fromCharCode(97 + i),
-        "unread",
-      ]),
-    ),
+    Array(26).fill("unread"),
   );
 
   const solutionMutation = useMutation({
@@ -48,34 +51,41 @@ export function useGame() {
   });
 
   const handleTimeout = () => {
-    if (guessMutation.isPending) return; // Ignore if they hit Enter just in time
+    if (guessMutation.isPending || gameStatus !== "playing") return; // Ignore if they hit Enter just in time
     timeoutMutation.mutate();
   };
 
   const updateKeyboardStatus = (attempt) => {
-    const guess = attempt.guess;
+    const guess = attempt.guess.toLowerCase();
     const result = attempt.result;
 
-    setKeyboardStatus((prev) => {
-      const nextStatus = { ...prev };
-
-      for (let i = 0; i < 5; i++) {
-        if (nextStatus[guess[i]] !== "correct") {
-          nextStatus[guess[i]] = result[i];
-        }
+    const nextStatus = [...keyboardStatus];
+    for (let i = 0; i < 5; i++) {
+      const index = guess.charCodeAt(i) - 97;
+      const prevResult = nextStatus[index];
+      const nextResult = result[i].status;
+      if (STATUS_PRIO[prevResult] < STATUS_PRIO[nextResult]) {
+        nextStatus[index] = nextResult;
       }
+    }
 
-      return nextStatus;
-    });
+    setKeyboardStatus(nextStatus);
   };
 
   const updateGameStatus = (guess, result, nextAttempts) => {
-    if (checkWin(result)) {
+    const isWin = checkWin(result);
+    const isLoss = nextAttempts.length > 5;
+
+    if (isWin) {
       setGameStatus("gameWon");
       setSolution(guess);
-    } else if (nextAttempts.length > 5) {
+    } else if (isLoss) {
       setGameStatus("gameOver");
       solutionMutation.mutate(nextAttempts);
+    }
+
+    if (isWin || isLoss) {
+      setShowCountdown(false);
     }
   };
 
@@ -135,6 +145,7 @@ export function useGame() {
     multiplier,
     error: guessMutation.error?.message,
     keyboardStatus,
+    showCountdown,
     // Actions
     handleInput,
     handleTimeout,
