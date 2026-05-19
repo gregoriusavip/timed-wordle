@@ -1,5 +1,4 @@
 import Tile from "./Tile";
-import "../styles.css";
 
 const COLORS = {
   correct: "bg-green-600",

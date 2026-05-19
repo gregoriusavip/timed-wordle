@@ -1,4 +1,3 @@
-import "../styles.css";
 import Row from "./Row";
 
 function Grid({ attempts, currentGuess }) {

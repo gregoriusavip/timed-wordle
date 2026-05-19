@@ -1,5 +1,3 @@
-import "../styles.css";
-
 function Tile({ letter, bckgColor }) {
   const tileClasses = `
   w-14 h-14 
