@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { mutateGuess, mutateSolution, mutateTimeout } from "../services/utils";
+import {
+  mutateGuess,
+  mutateSolution,
+  mutateTimeout,
+} from "../services/mutation";
 import { checkWin } from "../services/utils";
 
 const STATUS_PRIO = {

@@ -8,7 +8,7 @@ const COLORS = {
   unread: "bg-unread",
 };
 
-export function Keyboard({ keyboardStatus, handleInput }) {
+export default function Keyboard({ keyboardStatus, handleInput }) {
   const topRow = ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"];
   const midRow = ["a", "s", "d", "f", "g", "h", "j", "k", "l"];
   const botRow = ["z", "x", "c", "v", "b", "n", "m"];

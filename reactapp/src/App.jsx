@@ -1,6 +1,11 @@
-import Grid from "./components/game/Grid";
-import { Keyboard } from "./components/ui/Keyboard";
+// CSS
 import "./App.css";
+
+// COMPONENTS
+import Grid from "./components/game/Grid";
+import Keyboard from "./components/ui/Keyboard";
+
+// HOOKS
 import Countdown from "react-countdown";
 import { useGame } from "./hooks/useGame";
 
