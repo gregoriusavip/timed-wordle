@@ -4,6 +4,7 @@ import "./App.css";
 // COMPONENTS
 import Grid from "./components/game/Grid";
 import Keyboard from "./components/ui/Keyboard";
+import Timer from "./components/ui/Timer";
 
 // HOOKS
 import Countdown from "react-countdown";
@@ -28,15 +29,15 @@ function App() {
   const Completionist = () => <span>Random guess NOW!</span>;
 
   // Renderer callback with condition
-  const renderer = ({ seconds, completed }) => {
+  const renderer = ({ minutes, seconds, completed }) => {
     if (gameStatus !== "playing") {
       return null;
     }
     if (completed) {
       return <Completionist />;
     } else {
-      // Render a countdown
-      return <span>{seconds}</span>;
+      // Render a countdown timer
+      return <Timer minutes={minutes} seconds={seconds} />;
     }
   };
 
