@@ -1,0 +1,18 @@
+import Row from "./Row";
+
+function Grid({ attempts, currentGuess }) {
+  const remainingGuess = 5 - attempts.length;
+  return (
+    <div className="flex flex-col gap-1.5 min-w-66.75 max-w-[320px]">
+      {attempts.map((attempt, index) => (
+        <Row key={index} word={attempt.guess} result={attempt.result} />
+      ))}
+      {attempts.length < 6 && <Row key={attempts.length} word={currentGuess} />}
+      {Array.from({ length: remainingGuess }).map((_, index) => (
+        <Row key={attempts.length + index + 1} />
+      ))}
+    </div>
+  );
+}
+
+export default Grid;

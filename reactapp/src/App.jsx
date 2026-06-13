@@ -1,66 +1,66 @@
-import Grid from "./game/Grid";
+// CSS
 import "./App.css";
-import { useState, useEffect } from "react";
+
+// COMPONENTS
+import Grid from "./components/game/Grid";
+import Keyboard from "./components/ui/Keyboard";
+import Timer from "./components/ui/Timer";
+
+// HOOKS
+import Countdown from "react-countdown";
+import { useGame } from "./hooks/useGame";
 
 function App() {
-  const [guess, setGuess] = useState("");
-  const [guesses, setGuesses] = useState([]);
-  const [gameStatus, setGameStatus] = useState("playing");
-  const [invalidReason, setInvalidReason] = useState();
-  const [hardMode, setHardMode] = useState(false);
+  const {
+    guess,
+    attempts,
+    gameStatus,
+    solution,
+    targetTime,
+    multiplier,
+    error,
+    keyboardStatus,
+    showCountdown,
+    handleInput,
+    handleTimeout,
+  } = useGame();
 
-  function validateHardMode() {
-    // Handle hard mode validation
-  }
+  // Random component
+  const Completionist = () => <span>Random guess NOW!</span>;
 
-  function checkValidGuesses() {
-    // Handle checking the list of valid guess
-    return true; // placeholder
-  }
-
-  function validateWord() {
-    if (guess.length < 5) {
-      setInvalidReason("Not enough letters");
-      return false;
-    } else if (hardMode && validateHardMode()) {
-      setInvalidReason("Not using previous hints");
-      return false;
-    } else if (!checkValidGuesses()) {
-      setInvalidReason("Not a valid word");
-      return false;
+  // Renderer callback with condition
+  const renderer = ({ minutes, seconds, completed }) => {
+    if (gameStatus !== "playing") {
+      return null;
+    }
+    if (completed) {
+      return <Completionist />;
     } else {
-      return true;
+      // Render a countdown timer
+      return <Timer minutes={minutes} seconds={seconds} />;
     }
-  }
+  };
 
-  function submitGuess() {
-    if (validateWord()) {
-      setGuesses((prevGuesses) => [...prevGuesses, guess]);
-      setGuess("");
-    } else {
-      // Do some animation and show some pop up that the guess is invalid for x reason
-    }
-  }
-
-  function handleKeyDown(e) {
-    if (e.key === "Enter") {
-      submitGuess();
-    } else if (e.key === "Backspace" || e.key === "Delete") {
-      setGuess((prev) => prev.slice(0, -1));
-    } else if (/^[a-zA-Z]$/.test(e.key) && guess.length < 5) {
-      setGuess((prev) => prev + e.key.toUpperCase());
-    }
-  }
-
-  useEffect(() => {
-    if (gameStatus !== "playing") return;
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [guess, gameStatus]);
-
-  return <Grid guesses={guesses} currentGuess={guess}></Grid>;
+  return (
+    <>
+      {gameStatus === "gameWon"
+        ? `You Won. The word is: ${solution}`
+        : gameStatus === "gameOver"
+          ? `You Lost. The word is: ${solution}`
+          : null}
+      {showCountdown ? (
+        <Countdown
+          date={targetTime}
+          key={multiplier}
+          renderer={renderer}
+          onComplete={handleTimeout}
+        />
+      ) : null}
+      {error}
+      <Grid attempts={attempts} currentGuess={guess} />
+      <Keyboard keyboardStatus={keyboardStatus} handleInput={handleInput} />
+    </>
+  );
 }
 
 export default App;

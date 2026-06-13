@@ -1,1 +1,47 @@
 @import "tailwindcss";
+
+@theme {
+  --color-unread: #818384;
+
+  --animate-timer-blink-green: timer-blink-green 1s ease-in-out infinite;
+
+  --animate-timer-blink-yellow: timer-blink-yellow 0.5s ease-in-out infinite;
+
+  --animate-timer-blink-red: timer-blink-red 0.25s ease-in-out infinite;
+
+  @keyframes timer-blink-green {
+    0% {
+      border-color: transparent;
+    }
+    50% {
+      border-color: var(--color-green-400);
+    }
+    100% {
+      border-color: transparent;
+    }
+  }
+
+  @keyframes timer-blink-yellow {
+    0% {
+      border-color: transparent;
+    }
+    50% {
+      border-color: var(--color-yellow-400);
+    }
+    100% {
+      border-color: transparent;
+    }
+  }
+
+  @keyframes timer-blink-red {
+    0% {
+      border-color: transparent;
+    }
+    50% {
+      border-color: var(--color-red-500);
+    }
+    100% {
+      border-color: transparent;
+    }
+  }
+}
