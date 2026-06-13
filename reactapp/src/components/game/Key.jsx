@@ -1,12 +1,16 @@
 function Key({ letter, bckgColor, handleInput, SymbolComponent = null }) {
-  const tileClasses = `
-  w-14 h-14 
+  const container = `
+  w-8 h-9
   flex items-center justify-center 
-  text-2xl font-bold uppercase 
   ${bckgColor}`;
+  const text = "text-sm font-bold uppercase";
+  const border = "rounded-md shadow-md";
 
   return (
-    <button className={tileClasses} onClick={() => handleInput(letter)}>
+    <button
+      className={`${container} ${text} ${border}`}
+      onClick={(e) => handleInput(e, letter)}
+    >
       {SymbolComponent ? <SymbolComponent /> : letter}
     </button>
   );
