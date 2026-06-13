@@ -116,7 +116,6 @@ export function useGame() {
   const handleInput = useCallback(
     (key) => {
       if (gameStatus !== "playing") return;
-
       if (key === "Enter") {
         if (guess.length === 5) {
           guessMutation.mutate();
