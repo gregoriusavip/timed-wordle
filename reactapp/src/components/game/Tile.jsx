@@ -1,8 +1,8 @@
 function Tile({ letter, bckgColor }) {
   const tileClasses = `
-  w-14 h-14 
+  w-10 h-10 
   flex items-center justify-center 
-  text-2xl font-bold uppercase 
+  text-xl font-bold uppercase 
   ${bckgColor}
 `;
 
