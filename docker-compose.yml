@@ -1,5 +1,14 @@
 name: Timed Wordle
 services:
+  app-react:
+    build:
+      context: ./reactapp
+      dockerfile: Dockerfile
+    container_name: app-react
+    ports:
+     - 5173:5173
+    restart: unless-stopped
+    image: app-react
   api-django:
     build:
       context: ./djangoapp
