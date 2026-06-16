@@ -22,7 +22,7 @@ def _load_word_file(file_path):
 def get_solutions():
     solutions = cache.get("wordle_solutions")
     solutions_list = cache.get("wordle_solutions_list")
-    dataset_dir = os.path.join(settings.BASE_DIR.parent, "Dataset")
+    dataset_dir = os.path.join(settings.BASE_DIR, "Dataset")
 
     if solutions is None:
         solutions_path = os.path.join(dataset_dir, "valid_solutions.txt")
@@ -41,7 +41,7 @@ def get_guesses():
     guesses = cache.get("wordle_guesses")
 
     if guesses is None:
-        dataset_dir = os.path.join(settings.BASE_DIR.parent, "Dataset")
+        dataset_dir = os.path.join(settings.BASE_DIR, "Dataset")
         guesses_path = os.path.join(dataset_dir, "valid_guesses.txt")
         guesses = _load_word_file(guesses_path)
         cache.set("wordle_guesses", guesses)
