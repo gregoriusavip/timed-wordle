@@ -7,10 +7,8 @@ RUN corepack enable
 
 WORKDIR /app
 
-# Copy lockfiles first to leverage Docker caching for faster installs
 COPY package.json pnpm-lock.yaml* ./
 
-# Install ALL dependencies (including devDependencies like Vite/React-Scripts)
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
 
 COPY . .
