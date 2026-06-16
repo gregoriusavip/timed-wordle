@@ -4,6 +4,8 @@ FROM python:3.14.3-slim AS builder
 ## Install pipenv
 RUN pip install pipenv
 
+RUN pip install --upgrade pip==26.1.2
+
 WORKDIR /usr/src/app
 
 COPY Pipfile Pipfile.lock ./
