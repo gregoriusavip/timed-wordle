@@ -36,3 +36,5 @@ media.worktrees/
 
 # GEMINI
 GEMINI.md
+
+.pnpm-store
