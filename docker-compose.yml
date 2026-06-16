@@ -1,0 +1,12 @@
+name: Timed Wordle
+services:
+  api-django:
+    build:
+      context: ./djangoapp
+      dockerfile: Dockerfile
+    container_name: api-django
+    ports:
+      - 8000:8000
+    restart: unless-stopped
+    env_file: "./djangoapp/wordlebackend/.env"
+    image: api-django
